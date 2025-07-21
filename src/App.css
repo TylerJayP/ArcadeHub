@@ -1,0 +1,144 @@
+.App {
+  min-height: 100vh;
+  background: #000;
+}
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #001100 0%, #000000 100%);
+  position: relative;
+}
+
+.crt-effect {
+  position: relative;
+}
+
+.crt-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.crt-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 255, 0, 0.05);
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.login-terminal {
+  background: #000;
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 
+    0 0 20px #00ff00,
+    inset 0 0 20px rgba(0, 255, 0, 0.1);
+  position: relative;
+  z-index: 2;
+  min-width: 400px;
+}
+
+.terminal-header {
+  text-align: center;
+  border-bottom: 1px solid #00ff00;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.terminal-title {
+  font-weight: 900;
+  font-size: 1.2em;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.ascii-art {
+  color: #00ff00;
+  font-size: 10px;
+  line-height: 1;
+  text-align: center;
+  margin: 20px 0;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.login-form {
+  text-align: center;
+}
+
+.input-group {
+  margin: 20px 0;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.retro-input {
+  background: #000;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 10px;
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  text-align: center;
+  width: 200px;
+  border-radius: 4px;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.3),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+.retro-input:focus {
+  outline: none;
+  box-shadow: 
+    0 0 20px #00ff00,
+    inset 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.retro-button {
+  background: linear-gradient(45deg, #001100, #003300);
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 12px 24px;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px #00ff00;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.3),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+.retro-button:hover {
+  background: linear-gradient(45deg, #003300, #005500);
+  box-shadow: 
+    0 0 20px #00ff00,
+    inset 0 0 20px rgba(0, 255, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.retro-button:active {
+  transform: translateY(0);
+}

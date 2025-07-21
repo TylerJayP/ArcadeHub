@@ -1,0 +1,144 @@
+.game-library {
+  color: #00ff00;
+  min-height: 400px;
+}
+
+.library-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.library-header h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-shadow: 0 0 10px #00ff00;
+  margin-bottom: 10px;
+}
+
+.instruction {
+  color: #ffff00;
+  font-size: 14px;
+  text-shadow: 0 0 5px #ffff00;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.game-card {
+  background: linear-gradient(135deg, #001100 0%, #000000 100%);
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.game-card.playable:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 255, 0, 0.3);
+  border-color: #00ffff;
+}
+
+.game-card.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: #666;
+}
+
+.game-screen {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.game-preview {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.game-description {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.game-meta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 10px;
+  color: #888;
+}
+
+.game-controls {
+  text-align: center;
+}
+
+.insert-coin {
+  background: linear-gradient(45deg, #ff6600, #ff3300);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.game-card.locked .insert-coin {
+  background: linear-gradient(45deg, #666, #444);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.locked-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: #666;
+  z-index: 1;
+}
+
+.no-games {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+  font-size: 14px;
+}
+
+.no-games p {
+  margin: 10px 0;
+}

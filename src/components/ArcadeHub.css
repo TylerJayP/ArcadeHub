@@ -1,0 +1,308 @@
+.arcade-hub {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #001122 0%, #000000 50%, #110022 100%);
+  position: relative;
+  padding: 20px;
+}
+
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(transparent 50%, rgba(0, 255, 0, 0.02) 50%),
+    linear-gradient(90deg, transparent 50%, rgba(255, 0, 255, 0.01) 50%);
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.arcade-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.player-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.token-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.player-name, .token-count {
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  padding: 5px 15px;
+  border-radius: 20px;
+  text-shadow: 0 0 5px #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.dev-toggle {
+  background: rgba(255, 255, 0, 0.1);
+  border: 1px solid #ffff00;
+  color: #ffff00;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px #ffff00;
+  box-shadow: 0 0 5px rgba(255, 255, 0, 0.3);
+}
+
+.dev-toggle:hover {
+  background: rgba(255, 255, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+}
+
+.dev-controls {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.dev-button {
+  background: rgba(255, 0, 255, 0.1);
+  border: 1px solid #ff00ff;
+  color: #ff00ff;
+  padding: 3px 6px;
+  font-size: 10px;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px #ff00ff;
+  box-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+  min-width: 35px;
+}
+
+.dev-button:hover {
+  background: rgba(255, 0, 255, 0.2);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.dev-button.add {
+  border-color: #00ff00;
+  color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+  text-shadow: 0 0 5px #00ff00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.dev-button.add:hover {
+  background: rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.dev-button.remove {
+  border-color: #ff0000;
+  color: #ff0000;
+  background: rgba(255, 0, 0, 0.1);
+  text-shadow: 0 0 5px #ff0000;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.dev-button.remove:hover {
+  background: rgba(255, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.dev-button.reset {
+  border-color: #ffaa00;
+  color: #ffaa00;
+  background: rgba(255, 170, 0, 0.1);
+  text-shadow: 0 0 5px #ffaa00;
+  box-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+}
+
+.dev-button.reset:hover {
+  background: rgba(255, 170, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+.arcade-title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-shadow: 
+    0 0 10px #00ff00,
+    0 0 20px #00ff00,
+    0 0 30px #00ff00;
+  margin: 20px 0;
+  background: linear-gradient(45deg, #00ff00, #00aa00, #00ff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.2); }
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #ffff00;
+  text-shadow: 0 0 10px #ffff00;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.7; }
+}
+
+.arcade-main {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.arcade-cabinet {
+  background: linear-gradient(180deg, #333 0%, #111 100%);
+  border: 4px solid #555;
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  max-width: 800px;
+  width: 100%;
+}
+
+.cabinet-screen {
+  background: #000;
+  border: 8px solid #222;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 
+    inset 0 0 30px rgba(0, 255, 0, 0.1),
+    0 0 20px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.cabinet-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.02) 50%);
+  background-size: 100% 2px;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.cabinet-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #444 0%, #222 100%);
+  border-radius: 10px;
+  border: 2px solid #666;
+}
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.joystick {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #ff0000 30%, #aa0000 100%);
+  border-radius: 50%;
+  border: 4px solid #333;
+  position: relative;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.joystick::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 20px;
+  background: #333;
+  border-radius: 4px;
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid #333;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.button.red { background: radial-gradient(circle, #ff4444 30%, #aa0000 100%); }
+.button.blue { background: radial-gradient(circle, #4444ff 30%, #0000aa 100%); }
+.button.yellow { background: radial-gradient(circle, #ffff44 30%, #aaaa00 100%); }
+
+.coin-slot {
+  text-align: center;
+  color: #ccc;
+  font-size: 12px;
+}
+
+.slot {
+  width: 80px;
+  height: 20px;
+  background: #000;
+  border: 2px solid #333;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.arcade-footer {
+  text-align: center;
+  margin-top: 40px;
+  color: #666;
+  font-size: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .arcade-title {
+    font-size: 2rem;
+  }
+  
+  .arcade-cabinet {
+    margin: 0 10px;
+  }
+  
+  .cabinet-controls {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
