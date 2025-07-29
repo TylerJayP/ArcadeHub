@@ -19,18 +19,17 @@ const games = [
     preview: '🏓',
     file: 'pong.js',
     tokensOnWin: 1
+  },
+  {
+    id: 'rock-and-roll',
+    name: 'ROCK AND ROLL',
+    description: 'Rhythm-based driving game - hit the notes and avoid obstacles!',
+    developer: 'Group Member',
+    difficulty: 4,
+    preview: '🎸',
+    file: 'rockandroll.js',
+    tokensOnWin: 3
   }
-  // Add more games here as your team creates them
-  // {
-  //   id: 'your-game-id',
-  //   name: 'YOUR GAME NAME',
-  //   description: 'Your game description',
-  //   developer: 'Your Name',
-  //   difficulty: 1-5,
-  //   preview: '🎮', // Emoji or small icon
-  //   file: 'your-game.js',
-  //   tokensOnWin: 1-3
-  // }
 ];
 
 class GameRegistry {

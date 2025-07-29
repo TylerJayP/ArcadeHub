@@ -1,4 +1,4 @@
-// Demo Pong Game - Replace with your team's actual games
+// Fixed Pong Game - No Double Screen Issue
 class PongGame {
   constructor({ container, onScoreChange, onGameEnd, username }) {
     this.container = container;
@@ -35,80 +35,67 @@ class PongGame {
     this.ctx = this.canvas.getContext('2d');
     this.container.appendChild(this.canvas);
     
-    // Add instructions
+    // Add simple instructions below canvas
     const instructions = document.createElement('div');
     instructions.innerHTML = `
       <div style="text-align: center; margin: 20px; color: #00ff00; font-family: Orbitron;">
-        <h3>PONG GAME</h3>
+        <h3>🏓 ARCADE PONG 🏓</h3>
         <p>Use W/S or ↑/↓ keys to move paddle • First to 5 points wins!</p>
         <p>Win the game to earn 1 token!</p>
-        <button id="start-pong" style="
-          background: linear-gradient(45deg, #001100, #003300);
-          border: 2px solid #00ff00;
-          color: #00ff00;
-          padding: 10px 20px;
-          font-family: Orbitron;
-          font-weight: 700;
-          cursor: pointer;
-          border-radius: 4px;
-          margin-top: 10px;
-        ">START GAME</button>
       </div>
     `;
+    
     this.container.appendChild(instructions);
     
-    // Event listeners
-    document.getElementById('start-pong').addEventListener('click', () => {
-      this.startGame();
-    });
+    // Set up event listeners
+    this.keyDownHandler = (e) => this.handleKeyDown(e);
+    this.keyUpHandler = (e) => this.handleKeyUp(e);
     
-    document.addEventListener('keydown', (e) => {
-      this.keys[e.key] = true;
-    });
-    
-    document.addEventListener('keyup', (e) => {
-      this.keys[e.key] = false;
-    });
+    document.addEventListener('keydown', this.keyDownHandler);
+    document.addEventListener('keyup', this.keyUpHandler);
   }
 
-  startGame() {
+  start() {
+    // Start the game immediately when called by GamePlayer
     this.gameRunning = true;
-    this.gameLoop = setInterval(() => {
-      this.update();
-      this.draw();
-    }, 16); // ~60 FPS
+    this.gameLoop = this.runGame.bind(this);
+    this.gameLoop();
+  }
+
+  handleKeyDown(e) {
+    this.keys[e.key] = true;
+  }
+
+  handleKeyUp(e) {
+    this.keys[e.key] = false;
   }
 
   update() {
     if (!this.gameRunning) return;
     
-    // Player paddle movement
+    // Move player paddle
     if ((this.keys['w'] || this.keys['W'] || this.keys['ArrowUp']) && this.paddle.y > 0) {
       this.paddle.y -= this.paddle.speed;
     }
-    if ((this.keys['s'] || this.keys['S'] || this.keys['ArrowDown']) && this.paddle.y < this.canvas.height - this.paddle.height) {
+    if ((this.keys['s'] || this.keys['S'] || this.keys['ArrowDown']) && 
+        this.paddle.y < this.canvas.height - this.paddle.height) {
       this.paddle.y += this.paddle.speed;
     }
     
-    // AI paddle movement (simple AI)
-    const aiCenter = this.aiPaddle.y + this.aiPaddle.height / 2;
-    const ballCenter = this.ball.y;
-    
-    if (aiCenter < ballCenter - 35) {
+    // Move AI paddle (simple AI)
+    const paddleCenter = this.aiPaddle.y + this.aiPaddle.height / 2;
+    if (paddleCenter < this.ball.y - 35 && this.aiPaddle.y < this.canvas.height - this.aiPaddle.height) {
       this.aiPaddle.y += this.aiPaddle.speed;
-    } else if (aiCenter > ballCenter + 35) {
+    } else if (paddleCenter > this.ball.y + 35 && this.aiPaddle.y > 0) {
       this.aiPaddle.y -= this.aiPaddle.speed;
     }
     
-    // Keep AI paddle in bounds
-    this.aiPaddle.y = Math.max(0, Math.min(this.canvas.height - this.aiPaddle.height, this.aiPaddle.y));
-    
-    // Ball movement
+    // Move ball
     this.ball.x += this.ball.dx;
     this.ball.y += this.ball.dy;
     
     // Ball collision with top/bottom walls
-    if (this.ball.y <= 0 || this.ball.y >= this.canvas.height - this.ball.size) {
+    if (this.ball.y <= this.ball.size || this.ball.y >= this.canvas.height - this.ball.size) {
       this.ball.dy = -this.ball.dy;
     }
     
@@ -118,7 +105,8 @@ class PongGame {
         this.ball.y <= this.paddle.y + this.paddle.height &&
         this.ball.dx < 0) {
       this.ball.dx = -this.ball.dx;
-      this.ball.dx *= 1.05; // Increase speed slightly
+      // Add some randomness to ball direction
+      this.ball.dy += (Math.random() - 0.5) * 2;
     }
     
     if (this.ball.x >= this.aiPaddle.x - this.ball.size &&
@@ -126,22 +114,25 @@ class PongGame {
         this.ball.y <= this.aiPaddle.y + this.aiPaddle.height &&
         this.ball.dx > 0) {
       this.ball.dx = -this.ball.dx;
-      this.ball.dx *= 1.05; // Increase speed slightly
+      // Add some randomness to ball direction
+      this.ball.dy += (Math.random() - 0.5) * 2;
     }
     
-    // Scoring
+    // Ball goes off screen - score points
     if (this.ball.x < 0) {
       this.aiScore++;
       this.resetBall();
       if (this.aiScore >= 5) {
-        this.endGame(false);
+        this.endGame(false); // Player lost
       }
     } else if (this.ball.x > this.canvas.width) {
       this.score++;
-      this.onScoreChange(this.score);
+      if (this.onScoreChange) {
+        this.onScoreChange(this.score);
+      }
       this.resetBall();
       if (this.score >= 5) {
-        this.endGame(true);
+        this.endGame(true); // Player won
       }
     }
   }
@@ -149,19 +140,19 @@ class PongGame {
   resetBall() {
     this.ball.x = this.canvas.width / 2;
     this.ball.y = this.canvas.height / 2;
-    this.ball.dx = Math.random() > 0.5 ? 4 : -4;
+    this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * 4;
     this.ball.dy = (Math.random() - 0.5) * 6;
   }
 
   draw() {
     // Clear canvas
-    this.ctx.fillStyle = '#000000';
+    this.ctx.fillStyle = '#001100';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     
     // Draw center line
-    this.ctx.setLineDash([5, 15]);
-    this.ctx.strokeStyle = '#00ff00';
+    this.ctx.strokeStyle = '#333';
     this.ctx.lineWidth = 2;
+    this.ctx.setLineDash([5, 15]);
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvas.width / 2, 0);
     this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
@@ -175,32 +166,84 @@ class PongGame {
     
     // Draw ball
     this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillRect(this.ball.x, this.ball.y, this.ball.size, this.ball.size);
+    this.ctx.beginPath();
+    this.ctx.arc(this.ball.x, this.ball.y, this.ball.size, 0, Math.PI * 2);
+    this.ctx.fill();
     
     // Draw scores
-    this.ctx.fillStyle = '#00ff00';
-    this.ctx.font = 'bold 48px Orbitron';
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = '30px Orbitron';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText(this.score, this.canvas.width / 4, 60);
-    this.ctx.fillText(this.aiScore, (3 * this.canvas.width) / 4, 60);
+    this.ctx.fillText(this.score, this.canvas.width / 4, 50);
+    this.ctx.fillText(this.aiScore, 3 * this.canvas.width / 4, 50);
+    
+    // Draw labels
+    this.ctx.font = '16px Orbitron';
+    this.ctx.fillText('PLAYER', this.canvas.width / 4, 80);
+    this.ctx.fillText('COMPUTER', 3 * this.canvas.width / 4, 80);
+    
+    // Draw game over screen
+    if (!this.gameRunning) {
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      if (this.score >= 5) {
+        this.ctx.fillStyle = '#00ff00';
+        this.ctx.font = '40px Orbitron';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('YOU WIN!', this.canvas.width / 2, this.canvas.height / 2 - 40);
+      } else {
+        this.ctx.fillStyle = '#ff0000';
+        this.ctx.font = '40px Orbitron';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('YOU LOSE!', this.canvas.width / 2, this.canvas.height / 2 - 40);
+      }
+      
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.font = '20px Orbitron';
+      this.ctx.fillText(`Final Score: ${this.score} - ${this.aiScore}`, this.canvas.width / 2, this.canvas.height / 2);
+    }
+    
+    this.ctx.textAlign = 'start';
+  }
+
+  runGame() {
+    this.update();
+    this.draw();
+    
+    if (this.gameRunning) {
+      requestAnimationFrame(this.gameLoop);
+    }
   }
 
   endGame(playerWon) {
     this.gameRunning = false;
-    clearInterval(this.gameLoop);
     
     // Calculate tokens earned
-    const tokensEarned = playerWon ? 1 : 0;
+    let tokensEarned = 0;
+    if (playerWon) {
+      tokensEarned = 1; // Win the game to earn 1 token
+    }
     
     setTimeout(() => {
-      this.onGameEnd(this.score, tokensEarned);
-    }, 1000);
+      if (this.onGameEnd) {
+        this.onGameEnd(this.score, tokensEarned);
+      }
+    }, 3000);
   }
 
   cleanup() {
-    if (this.gameLoop) {
-      clearInterval(this.gameLoop);
+    this.gameRunning = false;
+    
+    // Remove event listeners
+    if (this.keyDownHandler) {
+      document.removeEventListener('keydown', this.keyDownHandler);
     }
+    if (this.keyUpHandler) {
+      document.removeEventListener('keyup', this.keyUpHandler);
+    }
+    
+    // Clear container
     if (this.container) {
       this.container.innerHTML = '';
     }

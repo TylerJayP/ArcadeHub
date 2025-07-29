@@ -1,4 +1,4 @@
-// Demo Snake Game - Replace with your team's actual games
+// Fixed Snake Game - No Double Screen Issue
 class SnakeGame {
   constructor({ container, onScoreChange, onGameEnd, username }) {
     this.container = container;
@@ -33,57 +33,42 @@ class SnakeGame {
     this.ctx = this.canvas.getContext('2d');
     this.container.appendChild(this.canvas);
     
-    // Add instructions
+    // Add simple instructions below canvas
     const instructions = document.createElement('div');
     instructions.innerHTML = `
       <div style="text-align: center; margin: 20px; color: #00ff00; font-family: Orbitron;">
-        <h3>SNAKE GAME</h3>
+        <h3>🐍 RETRO SNAKE 🐍</h3>
         <p>Use ARROW KEYS to move • Eat food to grow • Don't hit walls or yourself!</p>
         <p>Score 100+ points to earn 2 tokens!</p>
-        <button id="start-snake" style="
-          background: linear-gradient(45deg, #001100, #003300);
-          border: 2px solid #00ff00;
-          color: #00ff00;
-          padding: 10px 20px;
-          font-family: Orbitron;
-          font-weight: 700;
-          cursor: pointer;
-          border-radius: 4px;
-          margin-top: 10px;
-        ">START GAME</button>
       </div>
     `;
+    
     this.container.appendChild(instructions);
     
-    // Event listeners
-    document.getElementById('start-snake').addEventListener('click', () => {
-      this.startGame();
-    });
+    // Set up event listeners
+    this.keyHandler = (e) => this.handleKeyPress(e);
+    document.addEventListener('keydown', this.keyHandler);
     
-    document.addEventListener('keydown', (e) => {
-      this.handleKeyPress(e);
-    });
+    this.generateFood();
   }
 
-  startGame() {
+  start() {
+    // Start the game immediately when called by GamePlayer
     this.gameRunning = true;
-    this.gameLoop = setInterval(() => {
-      this.update();
-      this.draw();
-    }, 150);
+    this.gameLoop = this.runGame.bind(this);
+    this.gameLoop();
   }
 
   handleKeyPress(e) {
     if (!this.gameRunning) return;
     
-    const key = e.key;
-    if (key === 'ArrowUp' && this.direction.y === 0) {
+    if (e.key === 'ArrowUp' && this.direction.y === 0) {
       this.direction = { x: 0, y: -1 };
-    } else if (key === 'ArrowDown' && this.direction.y === 0) {
+    } else if (e.key === 'ArrowDown' && this.direction.y === 0) {
       this.direction = { x: 0, y: 1 };
-    } else if (key === 'ArrowLeft' && this.direction.x === 0) {
+    } else if (e.key === 'ArrowLeft' && this.direction.x === 0) {
       this.direction = { x: -1, y: 0 };
-    } else if (key === 'ArrowRight' && this.direction.x === 0) {
+    } else if (e.key === 'ArrowRight' && this.direction.x === 0) {
       this.direction = { x: 1, y: 0 };
     }
   }
@@ -91,23 +76,22 @@ class SnakeGame {
   update() {
     if (!this.gameRunning) return;
     
-    // Move snake
+    // Move snake head
     const head = { ...this.snake[0] };
     head.x += this.direction.x;
     head.y += this.direction.y;
     
     // Check wall collision
-    if (head.x < 0 || head.x >= 30 || head.y < 0 || head.y >= 20) {
+    if (head.x < 0 || head.x >= this.canvas.width / this.gridSize ||
+        head.y < 0 || head.y >= this.canvas.height / this.gridSize) {
       this.endGame();
       return;
     }
     
     // Check self collision
-    for (let segment of this.snake) {
-      if (head.x === segment.x && head.y === segment.y) {
-        this.endGame();
-        return;
-      }
+    if (this.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+      this.endGame();
+      return;
     }
     
     this.snake.unshift(head);
@@ -115,7 +99,9 @@ class SnakeGame {
     // Check food collision
     if (head.x === this.food.x && head.y === this.food.y) {
       this.score += 10;
-      this.onScoreChange(this.score);
+      if (this.onScoreChange) {
+        this.onScoreChange(this.score);
+      }
       this.generateFood();
     } else {
       this.snake.pop();
@@ -123,35 +109,35 @@ class SnakeGame {
   }
 
   generateFood() {
-    this.food = {
-      x: Math.floor(Math.random() * 30),
-      y: Math.floor(Math.random() * 20)
-    };
-    
-    // Make sure food doesn't spawn on snake
-    for (let segment of this.snake) {
-      if (this.food.x === segment.x && this.food.y === segment.y) {
-        this.generateFood();
-        break;
-      }
-    }
+    do {
+      this.food = {
+        x: Math.floor(Math.random() * (this.canvas.width / this.gridSize)),
+        y: Math.floor(Math.random() * (this.canvas.height / this.gridSize))
+      };
+    } while (this.snake.some(segment => segment.x === this.food.x && segment.y === this.food.y));
   }
 
   draw() {
     // Clear canvas
-    this.ctx.fillStyle = '#000000';
+    this.ctx.fillStyle = '#001100';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     
     // Draw snake
     this.ctx.fillStyle = '#00ff00';
-    for (let segment of this.snake) {
+    this.snake.forEach((segment, index) => {
+      if (index === 0) {
+        // Snake head - brighter
+        this.ctx.fillStyle = '#00ff88';
+      } else {
+        this.ctx.fillStyle = '#00cc00';
+      }
       this.ctx.fillRect(
         segment.x * this.gridSize,
         segment.y * this.gridSize,
         this.gridSize - 2,
         this.gridSize - 2
       );
-    }
+    });
     
     // Draw food
     this.ctx.fillStyle = '#ff0000';
@@ -161,24 +147,64 @@ class SnakeGame {
       this.gridSize - 2,
       this.gridSize - 2
     );
+    
+    // Draw score
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = '20px Orbitron';
+    this.ctx.fillText('Score: ' + this.score, 10, 30);
+    
+    // Draw game over screen
+    if (!this.gameRunning) {
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      this.ctx.fillStyle = '#ff0000';
+      this.ctx.font = '40px Orbitron';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('GAME OVER', this.canvas.width / 2, this.canvas.height / 2 - 40);
+      
+      this.ctx.fillStyle = '#00ff00';
+      this.ctx.font = '20px Orbitron';
+      this.ctx.fillText('Final Score: ' + this.score, this.canvas.width / 2, this.canvas.height / 2);
+      this.ctx.textAlign = 'start';
+    }
+  }
+
+  runGame() {
+    this.update();
+    this.draw();
+    
+    if (this.gameRunning) {
+      setTimeout(() => {
+        this.gameLoop();
+      }, 150); // Game speed
+    }
   }
 
   endGame() {
     this.gameRunning = false;
-    clearInterval(this.gameLoop);
     
     // Calculate tokens earned
-    const tokensEarned = this.score >= 100 ? 2 : this.score >= 50 ? 1 : 0;
+    let tokensEarned = 0;
+    if (this.score >= 100) tokensEarned = 2;
+    else if (this.score >= 50) tokensEarned = 1;
     
     setTimeout(() => {
-      this.onGameEnd(this.score, tokensEarned);
-    }, 1000);
+      if (this.onGameEnd) {
+        this.onGameEnd(this.score, tokensEarned);
+      }
+    }, 3000);
   }
 
   cleanup() {
-    if (this.gameLoop) {
-      clearInterval(this.gameLoop);
+    this.gameRunning = false;
+    
+    // Remove event listener
+    if (this.keyHandler) {
+      document.removeEventListener('keydown', this.keyHandler);
     }
+    
+    // Clear container
     if (this.container) {
       this.container.innerHTML = '';
     }
